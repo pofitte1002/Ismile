@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가능중학교 1-4 단톡방</title>
+    <style>
+        :root {
+            --kakao-bg: #BACEE0;
+            --kakao-white: #FFFFFF;
+            --text-info: #707070;
+            --pc-body-bg: #f0f0f0;
+            --drawer-bg: #FFFFFF;
+        }
+
+        /* 1. 심리적 압박 효과: 노이즈 필터 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_hz_sine_time_domain.png'); /* 노이즈 대용 패턴 */
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 9999;
+            animation: noise 0.2s infinite;
+        }
+
+        @keyframes noise {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-1%, -1%); }
+            100% { transform: translate(1%, 1%); }
+        }
+
+        /* 2. 심리적 압박 효과: 화면 진동 */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            100% { transform: translate(1px, 1px) rotate(0deg); }
+        }
+
+        .shake-active {
+            animation: shake 0.5s infinite;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: var(--pc-body-bg);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+        }
+
+        .chat-container {
+            width: 100%; max-width: 380px;
+            height: 90vh;
+            background-color: var(--kakao-bg);
+            display: flex; flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 15px; display: flex; align-items: center; justify-content: space-between;
+            color: #333; flex-shrink: 0; background-color: var(--kakao-bg);
+            z-index: 10;
+        }
+        header .title h1 { font-size: 15px; margin: 0; text-align: center; }
+        header .title span { font-size: 11px; opacity: 0.7; }
+        /* 공지사항 스타일 (수정됨) */
+        .announcement {
+            background-color: #FFFFFF;
+            padding: 10px 15px;
+            display: flex;
+            align-items: flex-start;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            z-index: 5;
+            margin: 0;
+        }
+        .announcement-icon { margin-right: 8px; font-size: 14px; flex-shrink: 0; }
+        .announcement-text { line-height: 1.4; flex-grow: 1; }
+        /* 공지사항 드로어 (Drawer) */
+        #notice-drawer {
+            position: absolute;
+            top: 0; right: -100%;
+            width: 100%; height: 100%;
+            background: var(--drawer-bg);
+            transition: right 0.3s ease;
+            z-index: 100;
+            display: flex; flex-direction: column;
+        }
+
+        #notice-drawer.active { right: 0; }
+
+        .drawer-header {
+            padding: 15px; border-bottom: 1px solid #eee;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .drawer-tabs {
+            display: flex; border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+        }
+        .tab { flex: 1; text-align: center; padding: 10px; font-size: 12px; color: #888; border-bottom: 2px solid transparent; }
+        .tab.active { color: #333; border-bottom: 2px solid #333; font-weight: bold; }
+
+        .notice-list { flex-grow: 1; overflow-y: auto; }
+        .notice-item {
+            padding: 15px; border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .notice-item .content { flex-grow: 1; }
+        .notice-item .title { font-size: 14px; color: #333; margin-bottom: 5px; }
+        .notice-item .date { font-size: 11px; color: #aaa; }
+        .notice-check { color: #ccc; font-size: 18px; }
+
+        /* 기존 채팅 UI */
+        #chat-log {
+            flex-grow: 1; padding: 15px 10px;
+            overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
+            scroll-behavior: smooth;
+        }
+
+        .message { display: flex; align-items: flex-start; animation: fadeIn 0.4s ease-in-out; }
+        .profile-img { width: 35px; height: 35px; border-radius: 13px; margin-right: 8px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
+        .message-content { max-width: 75%; }
+        .nickname { font-size: 11px; color: #444; margin-bottom: 3px; }
+        .bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; background-color: var(--kakao-white); color: #000; border-top-left-radius: 0; position: relative; }
+        .mention { color: #005ba4; font-weight: 500; }
+
+        footer { background-color: white; padding: 15px; text-align: center; font-size: 12px; color: #bbb; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container" id="main-container">
+    <div id="notice-drawer">
+        <div class="drawer-header">
+            <div onclick="toggleDrawer()" style="cursor:pointer;">← 1-4</div>
+            <div style="font-weight: bold;">공지</div>
+            <div style="font-size: 20px;">✎</div>
+        </div>
+        <div class="drawer-tabs">
+            <div class="tab">전체</div>
+            <div class="tab active">공지</div>
+            <div class="tab">투표</div>
+            <div class="tab">사진</div>
+        </div>
+        <div class="notice-list">
+            <div class="notice-item">
+                <div class="content">
+                    <div class="title">2026학년도 기초생활수급자 교육급여 신청 안내</div>
+                    <div class="date">2026년 3월 10일 오전 9:00 · 반장 박건우</div>
+                </div>
+                <div class="notice-check">☑</div>
+            </div>
+            <div class="notice-item">
+                <div class="content">
+                    <div class="title">1학기 중간고사 시간표 및 유의사항</div>
+                    <div class="date">2026년 4월 2일 오후 2:15 · 담임선생님</div>
+                </div>
+                <div class="notice-check">☑</div>
+            </div>
+            <div class="notice-item">
+                <div class="content">
+                    <div class="title">급식실 잔반 줄이기 캠페인 안내</div>
+                    <div class="date">2026년 3월 25일 오전 8:30 · 반장 박건우</div>
+                </div>
+                <div class="notice-check">☑</div>
+            </div>
+            <div class="notice-item">
+                <div class="content" style="color: #d32f2f;">
+                    <div class="title">방과 후 교실 이동 시 정숙 유지할 것 (경고)</div>
+                    <div class="date">2026년 4월 5일 오후 4:00 · 반장 박건우</div>
+                </div>
+                <div class="notice-check">☑</div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div style="font-size: 18px;">〈</div>
+        <div class="title"><h1>1학년 4반 <span>24</span></h1></div>
+        <div style="font-size: 18px; cursor: pointer;" onclick="toggleDrawer()">☰</div>
+    </header>
+
+    <div class="announcement">
+        📢 공지: 불필요한 대화 자제하고 공지 확인 시 이모티콘 달기 (방장: 박건우)
+    </div>
+
+    <main id="chat-log"></main>
+
+    <footer>대화에 참여할 권한이 없습니다.</footer>
+</div>
+
+<script>
+    const chatLog = document.getElementById('chat-log');
+    const container = document.getElementById('main-container');
+    const drawer = document.getElementById('notice-drawer');
+    
+    function toggleDrawer() {
+        drawer.classList.toggle('active');
+    }
+
+    const profileColors = {
+        "박서윤": "#E6B800", "최미래": "#7CB342", "이주아": "#F48FB1",
+        "한슬기": "#424242", "정하늘": "#9E9E9E", "강민호": "#FF8F00",
+        "송현우": "#795548", "박건우": "#212121", "기본": "#DDDDDD"
+    };
+
+    const chatData = [
+        { name: "이주아", text: "@오은지10423 은지야, 아까 복도에서 서윤이 부르는데 왜 대답 안 해? 서윤이가 민망해하잖아." },
+        { name: "최미래", text: "헐 진짜? 서윤이가 말을 걸어줬는데 무시했다고? 대박..." },
+        { name: "박서윤", text: "아냐 얘들아. 내가 사람 잘못 본 거겠지. 우리 반에 은지라는 애가 있었나 싶기도 하고." },
+        { name: "최미래", text: "서윤이 착한 거 봐ㅠㅠ 은지야 너 초딩 때 애들한테 맞고 지냈다는 거 사실이야? 주아한테 들었는데 진짜 불쌍해서 물어보는 거야." },
+        { name: "이주아", text: "아 맞다, 나 오늘 은지네 집 근처 지나갔는데... 그 주공아파트 말이야. 거기 진짜 분위기 묘하더라. 무서워서 얼른 뛰어옴ㅠ" },
+        { name: "한슬기", text: "주공... 거기 재건축도 안 된다며? 아직 그런 데 사는 사람 있구나..." },
+        { name: "송현우", text: "ㅋㅋㅋㅋ 야 기사 못 봄? 주공 단지 애들이랑은 말도 섞지 말라던데. 옮는다고." },
+        { name: "강민호", text: "내일부터 이동수업 때 은지 책상 우리 줄에 붙이지 마라. 자리 좁아지니까." },
+        { name: "최미래", text: "@오은지10423 은지야 근데 너 진짜 안 씻어? 애들이 너 옆에 가면 이상한 냄새 난대... 내가 서윤이한테 부탁해서 향수라도 빌려줄까?" },
+        { name: "박서윤", text: "미래야, 나는 아무나 물건 빌려주는 거 싫어해. 알잖아." },
+        { name: "박건우", text: "조용히 해. 쌤 오신다." },
+        { name: "송현우", text: "@오은지10423 야 은지는 왜 한 마디도 안 해? 투명인간이라 타자도 안 쳐짐?" },
+        { name: "박서윤", text: "근데 얘들아, 나 내일 이동수업 때 내 옆자리에 아무도 안 앉았으면 좋겠어. 좀 답답해서." },
+        { name: "최미래", text: "무슨 뜻인지 다들 알지? 서윤이 예민하니까 조심하자 ^^" },
+        { name: "송현우", text: "@오은지10423 들었지? 넌 그냥 내일도 없는 사람인 척해라." }
+    ];
+
+    let index = 0;
+
+    function addMessage() {
+        if (index < chatData.length) {
+            const data = chatData[index];
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message';
+            const profileColor = profileColors[data.name] || profileColors["기본"];
+            const highlightedText = data.text.replace(/@오은지10423/g, '<span class="mention">@오은지10423</span>');
+
+            msgDiv.innerHTML = `
+                <div class="profile-img" style="background-color: ${profileColor}"></div>
+                <div class="message-content">
+                    <div class="nickname">${data.name}</div>
+                    <div class="bubble">${highlightedText}</div>
+                </div>
+            `;
+            
+            chatLog.appendChild(msgDiv);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            // 멘션이 포함된 메시지일 때 화면 진동 효과
+            if (data.text.includes("@오은지10423")) {
+                container.classList.add('shake-active');
+                setTimeout(() => container.classList.remove('shake-active'), 500);
+            }
+
+            index++;
+            const nextDelay = Math.random() * 1500 + 1000;
+            setTimeout(addMessage, nextDelay);
+        }
+    }
+
+    setTimeout(addMessage, 2000);
+</script>
+
+</body>
+</html>
