@@ -217,7 +217,7 @@
     };
 
     const chatData = [
-        { name: "이주아", text: "@오은지10423 은지야, 아까 복도에서 서윤이 부르는데 왜 대답 안 해? 서윤이가 민망해하잖아." },
+        { name: "이주아", text: "@이은지10423 은지야, 아까 복도에서 서윤이 부르는데 왜 대답 안 해? 서윤이가 민망해하잖아." },
         { name: "최미래", text: "헐 진짜? 서윤이가 말을 걸어줬는데 무시했다고? 대박..." },
         { name: "박서윤", text: "아냐 얘들아. 내가 사람 잘못 본 거겠지. 우리 반에 은지라는 애가 있었나 싶기도 하고." },
         { name: "최미래", text: "서윤이 착한 거 봐ㅠㅠ 은지야 너 초딩 때 애들한테 맞고 지냈다는 거 사실이야? 주아한테 들었는데 진짜 불쌍해서 물어보는 거야." },
@@ -225,13 +225,13 @@
         { name: "한슬기", text: "주공... 거기 재건축도 안 된다며? 아직 그런 데 사는 사람 있구나..." },
         { name: "송현우", text: "ㅋㅋㅋㅋ 야 기사 못 봄? 주공 단지 애들이랑은 말도 섞지 말라던데. 옮는다고." },
         { name: "강민호", text: "내일부터 이동수업 때 은지 책상 우리 줄에 붙이지 마라. 자리 좁아지니까." },
-        { name: "최미래", text: "@오은지10423 은지야 근데 너 진짜 안 씻어? 애들이 너 옆에 가면 이상한 냄새 난대... 내가 서윤이한테 부탁해서 향수라도 빌려줄까?" },
+        { name: "최미래", text: "@이은지10423 은지야 근데 너 진짜 안 씻어? 애들이 너 옆에 가면 이상한 냄새 난대... 내가 서윤이한테 부탁해서 향수라도 빌려줄까?" },
         { name: "박서윤", text: "미래야, 나는 아무나 물건 빌려주는 거 싫어해. 알잖아." },
         { name: "박건우", text: "조용히 해. 쌤 오신다." },
-        { name: "송현우", text: "@오은지10423 야 은지는 왜 한 마디도 안 해? 투명인간이라 타자도 안 쳐짐?" },
+        { name: "송현우", text: "@이은지10423 야 은지는 왜 한 마디도 안 해? 투명인간이라 타자도 안 쳐짐?" },
         { name: "박서윤", text: "근데 얘들아, 나 내일 이동수업 때 내 옆자리에 아무도 안 앉았으면 좋겠어. 좀 답답해서." },
         { name: "최미래", text: "무슨 뜻인지 다들 알지? 서윤이 예민하니까 조심하자 ^^" },
-        { name: "송현우", text: "@오은지10423 들었지? 넌 그냥 내일도 없는 사람인 척해라." }
+        { name: "송현우", text: "@이은지10423 들었지? 넌 그냥 내일도 없는 사람인 척해라." }
     ];
 
     let index = 0;
@@ -242,7 +242,7 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message';
             const profileColor = profileColors[data.name] || profileColors["기본"];
-            const highlightedText = data.text.replace(/@오은지10423/g, '<span class="mention">@오은지10423</span>');
+            const highlightedText = data.text.replace(/@이은지10423/g, '<span class="mention">@이은지10423</span>');
 
             msgDiv.innerHTML = `
                 <div class="profile-img" style="background-color: ${profileColor}"></div>
@@ -256,7 +256,7 @@
             chatLog.scrollTop = chatLog.scrollHeight;
 
             // 멘션이 포함된 메시지일 때 화면 진동 효과
-            if (data.text.includes("@오은지10423")) {
+            if (data.text.includes("@이은지10423")) {
                 container.classList.add('shake-active');
                 setTimeout(() => container.classList.remove('shake-active'), 500);
             }
@@ -271,4 +271,5 @@
 </script>
 
 </body>
+
 </html>
