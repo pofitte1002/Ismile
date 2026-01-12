@@ -18,33 +18,24 @@
             --btn-block: #D32F2F;
         }
 
-        /* 1. 심리적 압박 효과: CSS SVG 노이즈 필터 (이미지 파일 X) */
+        /* 1. 노이즈 필터 (HTML 내장 SVG 방식) */
         body::before {
             content: "";
             position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            /* SVG Data URI를 사용하여 코드 자체적으로 노이즈 생성 */
-            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
-            opacity: 0.08; /* 노이즈 강도 조절 */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            /* 외부 이미지 대신 SVG Data URI를 사용하여 자체 생성 */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+            opacity: 0.05; /* 투명도 조절 */
             pointer-events: none;
             z-index: 9999;
-            /* steps 함수를 사용하여 디지털 지직거림 표현 */
-            animation: noise 0.2s steps(4) infinite; 
+            animation: noise 0.2s infinite;
         }
 
         @keyframes noise {
-            0% { transform: translate(0, 0); }
-            10% { transform: translate(-5%, -5%); }
-            20% { transform: translate(-10%, 5%); }
-            30% { transform: translate(5%, -10%); }
-            40% { transform: translate(-5%, 15%); }
-            50% { transform: translate(-10%, 5%); }
-            60% { transform: translate(15%, 0); }
-            70% { transform: translate(0, 10%); }
-            80% { transform: translate(-15%, 0); }
-            90% { transform: translate(10%, 5%); }
-            100% { transform: translate(5%, 0); }
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-1%, -1%); }
+            100% { transform: translate(1%, 1%); }
         }
 
         /* 2. 화면 진동 효과 */
@@ -132,7 +123,7 @@
 
         .message { display: flex; align-items: flex-start; animation: fadeIn 0.4s ease-in-out; }
         
-        /* 프로필 이미지 (개별 URL 방식 적용) */
+        /* 프로필 이미지 */
         .profile-img { 
             width: 38px; height: 38px; border-radius: 14px; margin-right: 10px; 
             flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); 
@@ -142,7 +133,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #ddd;
+            background-color: #ddd; 
         }
         .profile-img:active { transform: scale(0.95); }
 
@@ -344,32 +335,70 @@
         drawer.classList.toggle('active');
     }
 
-    // NPC 데이터
+    // NPC 데이터 (URL 직접 연결)
     const characterData = {
-        "박건우": { code: "geonu", status: "반장 / 공지 필독. 개인 톡 사절." },
-        "정하늘": { code: "haneul", status: "..." },
-        "송현우": { code: "hyeonu", status: "No pain No gain 💪" },
-        "윤지후": { code: "jifu", status: "내가 그린 기린 그림" },
-        "도진우": { code: "jinu", status: "매너 좀 지키자 ^^" },
-        "이주아": { code: "juah", status: "Happy Day! ✨" },
-        "강민호": { code: "minho", status: "축구하고 싶다" },
-        "최미래": { code: "mirae", status: "건들지 마세요. 예민함." },
-        "박서윤": { code: "seoyun", status: "Be nice or go away." },
-        "한슬기": { code: "seulgi", status: ".." },
-        "김시우": { code: "siu", status: "효율적으로 살자." },
-        "이은지": { code: "default", status: "" } 
+        "박건우": { 
+            img: "https://poft.uk/kyryll/profile-geonu.png", 
+            status: "반장 / 공지 필독. 개인 톡 사절." 
+        },
+        "정하늘": { 
+            img: "https://poft.uk/kyryll/profile-haneul.png", 
+            status: "..." 
+        },
+        "송현우": { 
+            img: "https://poft.uk/kyryll/profile-hyeonu.png", 
+            status: "No pain No gain 💪" 
+        },
+        "윤지후": { 
+            img: "https://poft.uk/kyryll/profile-jifu.png", 
+            status: "내가 그린 기린 그림" 
+        },
+        "도진우": { 
+            img: "https://poft.uk/kyryll/profile-jinu.png", 
+            status: "매너 좀 지키자 ^^" 
+        },
+        "이주아": { 
+            img: "https://poft.uk/kyryll/profile-juah.png", 
+            status: "Happy Day! ✨" 
+        },
+        "강민호": { 
+            img: "https://poft.uk/kyryll/profile-minho.png", 
+            status: "축구하고 싶다" 
+        },
+        "최미래": { 
+            img: "https://poft.uk/kyryll/profile-mirae.png", 
+            status: "건들지 마세요. 예민함." 
+        },
+        "박서윤": { 
+            img: "https://poft.uk/kyryll/profile-seoyun.png", 
+            status: "Be nice or go away." 
+        },
+        "한슬기": { 
+            img: "https://poft.uk/kyryll/profile-seulgi.png", 
+            status: ".." 
+        },
+        "김시우": { 
+            img: "https://poft.uk/kyryll/profile-siu.png", 
+            status: "효율적으로 살자." 
+        },
+        // 이은지는 뷰어(유저)
+        "이은지": { 
+            img: "", 
+            status: "" 
+        }
     };
 
     // 프로필 열기 함수
     function showProfile(name) {
-        const data = characterData[name] || { code: "default", status: "" };
+        const data = characterData[name] || { img: "", status: "" };
         
         modalName.innerText = name;
         modalStatus.innerText = data.status || "상태메시지가 없습니다.";
         
-        if(data.code !== "default") {
-            const imgUrl = `https://poft.uk/kyryll/profile-${data.code}.png`;
-            modalAvatar.style.backgroundImage = `url('${imgUrl}')`;
+        // URL 적용
+        if(data.img) {
+            modalAvatar.style.backgroundImage = `url('${data.img}')`;
+            modalAvatar.style.backgroundColor = 'transparent';
         } else {
             modalAvatar.style.backgroundImage = 'none';
             modalAvatar.style.backgroundColor = '#CFD8DC';
@@ -382,7 +411,7 @@
         profileModal.classList.remove('active');
     }
 
-    // 채팅 시나리오
+    // 채팅 시나리오 (이은지 대사 없음, NPC들이 은지 무시/괴롭힘)
     const chatData = [
         { name: "이주아", text: "@이은지10423 야 은지야, 아까 서윤이가 인사했는데 왜 무시해? 너 진짜 그러는 거 아니야; 서윤이 민망하게." },
         { name: "최미래", text: "진짜? 와.. 서윤이 성격에 참고 넘어간 게 보살이다. 은지 쟤는 원래 사람 무시하는 게 특기잖아." },
@@ -410,13 +439,13 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message';
             
-            const charInfo = characterData[data.name] || { code: "default" };
+            const charInfo = characterData[data.name] || { img: "" };
             const highlightedText = data.text.replace(/@이은지10423/g, '<span class="mention">@이은지10423</span>');
 
+            // 프로필 이미지 URL 적용
             let bgStyle = "";
-            if (charInfo.code !== "default") {
-                const imgUrl = `https://poft.uk/kyryll/profile-${charInfo.code}.png`;
-                bgStyle = `background-image: url('${imgUrl}');`;
+            if (charInfo.img) {
+                bgStyle = `background-image: url('${charInfo.img}');`;
             } else {
                 bgStyle = `background-image: none; background-color: #CFD8DC;`;
             }
@@ -434,6 +463,7 @@
             chatLog.appendChild(msgDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
 
+            // 멘션(이은지) 당할 때 화면 흔들림 효과
             if (data.text.includes("@이은지10423")) {
                 container.classList.add('shake-active');
                 setTimeout(() => container.classList.remove('shake-active'), 500);
