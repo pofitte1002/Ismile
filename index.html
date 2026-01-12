@@ -6,17 +6,19 @@
     <title>가능중학교 1-4 단톡방</title>
     <style>
         :root {
-            /* 컬러 팔레트 변경: 카카오톡 느낌 제거 (차분한 세이지 그레이 톤) */
-            --chat-bg: #CFD8DC;       /* 배경: 블루 그레이 */
-            --header-bg: #ECEFF1;     /* 헤더: 아주 연한 그레이 */
-            --bubble-bg: #FFFFFF;     /* 말풍선: 흰색 */
-            --text-primary: #37474F;  /* 본문 텍스트: 진한 챠콜 */
+            /* Muted Sage & Cool Grey Tone (카카오톡 느낌 제거) */
+            --chat-bg: #CFD8DC;       /* 차분한 블루 그레이 */
+            --header-bg: #ECEFF1;     /* 헤더 */
+            --bubble-bg: #FFFFFF;     /* 말풍선 */
+            --text-primary: #37474F;  /* 메인 텍스트 */
             --text-secondary: #78909C;/* 보조 텍스트 */
             --pc-body-bg: #f0f0f0;
             --drawer-bg: #FFFFFF;
+            --btn-contact: #546E7A;
+            --btn-block: #D32F2F;
         }
 
-        /* 1. 심리적 압박 효과: 노이즈 필터 */
+        /* 1. 노이즈 필터 (심리적 압박) */
         body::before {
             content: "";
             position: fixed;
@@ -35,7 +37,7 @@
             100% { transform: translate(1%, 1%); }
         }
 
-        /* 2. 심리적 압박 효과: 화면 진동 */
+        /* 2. 화면 진동 효과 */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -60,7 +62,7 @@
 
         .chat-container {
             width: 100%; max-width: 380px;
-            height: 90vh; /* 9:16 비율 유지를 위한 높이 설정 */
+            height: 90vh; 
             aspect-ratio: 9/16;
             background-color: var(--chat-bg);
             display: flex; flex-direction: column;
@@ -69,7 +71,7 @@
             overflow: hidden;
         }
 
-        /* --- 헤더 및 공지 스타일 --- */
+        /* --- 헤더 --- */
         header {
             padding: 15px; display: flex; align-items: center; justify-content: space-between;
             color: var(--text-primary); flex-shrink: 0; background-color: var(--header-bg);
@@ -79,7 +81,7 @@
         header .title span { font-size: 11px; opacity: 0.7; }
         
         .announcement {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.95);
             padding: 10px 15px;
             display: flex; align-items: flex-start;
             font-size: 12px; color: var(--text-primary);
@@ -88,7 +90,7 @@
             backdrop-filter: blur(5px);
         }
 
-        /* --- 드로어 (Drawer) --- */
+        /* --- 드로어 --- */
         #notice-drawer {
             position: absolute; top: 0; right: -100%;
             width: 100%; height: 100%;
@@ -109,24 +111,27 @@
         .notice-item .date { font-size: 11px; color: #aaa; }
         .notice-check { color: #ccc; font-size: 18px; }
 
-        /* --- 채팅 UI --- */
+        /* --- 채팅창 --- */
         #chat-log {
             flex-grow: 1; padding: 15px 10px;
             overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
             scroll-behavior: smooth;
         }
-
-        /* 스크롤바 커스텀 (숨김에 가깝게) */
         #chat-log::-webkit-scrollbar { width: 4px; }
         #chat-log::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.1); border-radius: 4px; }
 
         .message { display: flex; align-items: flex-start; animation: fadeIn 0.4s ease-in-out; }
+        
+        /* 프로필 이미지 (스프라이트 적용) */
         .profile-img { 
             width: 38px; height: 38px; border-radius: 14px; margin-right: 10px; 
             flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); 
             cursor: pointer; 
             transition: transform 0.1s;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            background-image: url('https://poft.uk/kyryll/profile-NPCcode.png');
+            background-size: 1100% 100%; /* 이미지가 11개 가로로 나열되어 있다고 가정 */
+            background-repeat: no-repeat;
         }
         .profile-img:active { transform: scale(0.95); }
 
@@ -146,120 +151,97 @@
         .mention { color: #D32F2F; font-weight: 600; background: rgba(211, 47, 47, 0.05); padding: 0 2px; border-radius: 3px; }
 
         footer { 
-            background-color: #F5F5F5; 
-            padding: 15px; 
-            text-align: center; 
-            font-size: 12px; 
-            color: #90A4AE; 
-            flex-shrink: 0; 
-            border-top: 1px solid rgba(0,0,0,0.05);
+            background-color: #F5F5F5; padding: 15px; 
+            text-align: center; font-size: 12px; color: #90A4AE; 
+            flex-shrink: 0; border-top: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* --- 프로필 모달 (버그 수정됨) --- */
+        /* --- 프로필 모달 --- */
         #profile-modal {
-            position: absolute;
-            top: 0; left: 0;
+            position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.6);
             z-index: 200;
-            display: flex;
-            align-items: flex-end; 
-            visibility: hidden;
-            opacity: 0;
+            display: flex; align-items: flex-end; 
+            visibility: hidden; opacity: 0;
             transition: all 0.25s ease;
         }
-        #profile-modal.active {
-            visibility: visible;
-            opacity: 1;
-        }
+        #profile-modal.active { visibility: visible; opacity: 1; }
 
         .modal-card {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background: #fff;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             position: relative;
         }
 
         .close-btn {
-            position: absolute;
-            top: 20px; left: 20px;
-            font-size: 24px;
-            color: #444;
-            cursor: pointer;
-            z-index: 202;
-            background: none; border: none; padding: 5px;
+            position: absolute; top: 20px; left: 20px;
+            font-size: 24px; color: #444; cursor: pointer;
+            z-index: 202; background: none; border: none; padding: 5px;
         }
 
         .profile-bg {
-            flex: 2; /* 비율 조정 */
+            flex: 2;
             background-color: #FAFAFA;
             background-image: 
                 linear-gradient(#E0E0E0 1px, transparent 1px),
                 linear-gradient(90deg, #E0E0E0 1px, transparent 1px);
             background-size: 30px 30px;
             position: relative;
-            /* Flex 제거: 아바타 배치를 position absolute로 제어 */
         }
 
-        /* 수정된 아바타 배치: 배경 하단 중앙에 정확히 걸치도록 설정 */
         .modal-avatar {
             width: 90px; height: 90px;
             border-radius: 38%;
             position: absolute;
-            bottom: -45px; /* 높이의 절반만큼 아래로 내림 */
-            left: 50%;
-            transform: translateX(-50%); /* 가로 중앙 정렬 */
+            bottom: -45px; left: 50%;
+            transform: translateX(-50%);
             border: 5px solid white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             z-index: 10;
+            background-image: url('https://poft.uk/kyryll/profile-NPCcode.png');
+            background-size: 1100% 100%;
+            background-repeat: no-repeat;
+            background-color: #eee;
         }
 
         .profile-info {
             flex: 1.8;
             background: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 55px; /* 아바타 공간 확보 */
-        }
-
-        .modal-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #263238;
-            margin-bottom: 8px;
-        }
-
-        .modal-status {
-            font-size: 13px;
-            color: #78909C;
-            margin-bottom: 30px;
-            text-align: center;
-            padding: 0 20px;
-            line-height: 1.4;
-        }
-
-        .profile-actions {
-            display: flex;
-            gap: 25px;
-            margin-top: auto;
-            margin-bottom: 50px;
-        }
-        .action-item {
             display: flex; flex-direction: column; align-items: center;
-            gap: 8px; cursor: pointer; color: #546E7A;
+            padding-top: 55px;
         }
-        .action-icon {
-            width: 44px; height: 44px; border-radius: 50%;
-            background: #F5F5F5; 
-            display: flex; justify-content: center; align-items: center;
-            font-size: 18px;
-            transition: background 0.2s;
+
+        .modal-name { font-size: 18px; font-weight: 700; color: #263238; margin-bottom: 8px; }
+        .modal-status {
+            font-size: 13px; color: #78909C;
+            margin-bottom: 30px; text-align: center;
+            padding: 0 20px; line-height: 1.4;
         }
-        .action-item:hover .action-icon { background: #ECEFF1; }
-        .action-text { font-size: 11px; font-weight: 500; }
+
+        /* 수정된 버튼: 연락하기, 차단하기 */
+        .profile-actions {
+            display: flex; gap: 15px;
+            margin-top: auto; margin-bottom: 50px;
+            width: 80%; justify-content: center;
+        }
+        .action-btn {
+            flex: 1; padding: 12px 0;
+            border-radius: 8px; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 6px;
+            transition: opacity 0.2s;
+        }
+        .action-btn:active { opacity: 0.8; }
+        
+        .btn-contact {
+            background-color: var(--btn-contact); color: white;
+        }
+        .btn-block {
+            background-color: transparent; 
+            border: 1px solid var(--btn-block); color: var(--btn-block);
+        }
 
     </style>
 </head>
@@ -303,7 +285,6 @@
         <div class="modal-card">
             <button class="close-btn" onclick="closeProfile()">✕</button>
             <div class="profile-bg">
-                <!-- 아바타 위치 CSS 수정됨 -->
                 <div class="modal-avatar" id="modal-avatar-img"></div>
             </div>
             <div class="profile-info">
@@ -311,18 +292,12 @@
                 <div class="modal-status" id="modal-status-text">상태메시지</div>
                 
                 <div class="profile-actions">
-                    <div class="action-item">
-                        <div class="action-icon">💬</div>
-                        <span class="action-text">1:1 채팅</span>
-                    </div>
-                    <div class="action-item">
-                        <div class="action-icon">📞</div>
-                        <span class="action-text">통화하기</span>
-                    </div>
-                    <div class="action-item">
-                        <div class="action-icon">📹</div>
-                        <span class="action-text">페이스톡</span>
-                    </div>
+                    <button class="action-btn btn-contact">
+                        <span>💬</span> 연락하기
+                    </button>
+                    <button class="action-btn btn-block">
+                        <span>🚫</span> 차단하기
+                    </button>
                 </div>
             </div>
         </div>
@@ -336,7 +311,7 @@
     </header>
 
     <div class="announcement">
-        📢 공지: 불필요한 대화 자제하고 공지 확인 시 이모티콘 달기 (방장: 박건우)
+        📢 공지: 불필요한 대화 자제. 험담 금지. (반장: 박건우)
     </div>
 
     <main id="chat-log"></main>
@@ -359,58 +334,69 @@
         drawer.classList.toggle('active');
     }
 
-    // 캐릭터별 데이터 (색상, 상태메시지) - NPC 추가됨
+    // NPC 데이터 및 이미지 인덱스 매핑
+    // 이미지 순서(알파벳순): 
+    // 0:geonu, 1:haneul, 2:hyeonu, 3:jifu, 4:jinu, 5:juah, 6:minho, 7:mirae, 8:seoyun, 9:seulgi, 10:siu
     const characterData = {
-        "이주아": { color: "#F06292", status: "Simplicity is the ultimate sophistication ✨" },
-        "최미래": { color: "#AED581", status: "건들지 마세요. 예민함." },
-        "박서윤": { color: "#FFD54F", status: "Be nice or go away :)" },
-        "한슬기": { color: "#78909C", status: "귀찮아..." },
-        "정하늘": { color: "#90A4AE", status: "수학 수행평가 범위 아는 사람?" },
-        "강민호": { color: "#FFB74D", status: "축구하고 싶다" },
-        "송현우": { color: "#8D6E63", status: "No pain No gain 💪" },
-        "박건우": { color: "#455A64", status: "1-4 반장 / 공지 필독" },
-        "윤지후": { color: "#7986CB", status: "알림 좀 꺼라 제발" },
-        "도진우": { color: "#4DB6AC", status: "용건만. 그 외 연락 무시함." },
-        "이은지": { color: "#CFD8DC", status: "" },
-        "기본": { color: "#CFD8DC", status: "" }
+        "박건우": { index: 0, status: "반장 / 공지 필독. 개인 톡 사절." },
+        "정하늘": { index: 1, status: "..." },
+        "송현우": { index: 2, status: "No pain No gain 💪" },
+        "윤지후": { index: 3, status: "내가 그린 기린 그림" },
+        "도진우": { index: 4, status: "매너 좀 지키자 ^^" },
+        "이주아": { index: 5, status: "Happy Day! ✨" },
+        "강민호": { index: 6, status: "축구하고 싶다" },
+        "최미래": { index: 7, status: "건들지 마세요. 예민함." },
+        "박서윤": { index: 8, status: "Be nice or go away." },
+        "한슬기": { index: 9, status: ".." },
+        "김시우": { index: 10, status: "효율적으로 살자." },
+        "이은지": { index: -1, status: "" }, // 은지는 이미지 없음 (기본 처리)
     };
 
     // 프로필 열기 함수
     function showProfile(name) {
-        const data = characterData[name] || characterData["기본"];
+        const data = characterData[name] || { index: -1, status: "" };
+        
         modalName.innerText = name;
         modalStatus.innerText = data.status || "상태메시지가 없습니다.";
-        modalAvatar.style.backgroundColor = data.color;
+        
+        // 이미지 위치 조정 (스프라이트)
+        // 11개 이미지이므로 간격은 0%, 10%, 20% ... 100%
+        if(data.index >= 0) {
+            const positionX = data.index * 10; // 0, 10, 20...
+            modalAvatar.style.backgroundPosition = `${positionX}% 0`;
+            modalAvatar.style.backgroundColor = 'transparent';
+        } else {
+            // 이은지 혹은 데이터 없을 경우 회색 처리
+            modalAvatar.style.backgroundPosition = 'center';
+            modalAvatar.style.backgroundColor = '#CFD8DC';
+        }
+
         profileModal.classList.add('active');
     }
 
-    // 프로필 닫기 함수
     function closeProfile() {
         profileModal.classList.remove('active');
     }
 
-    // 채팅 시나리오 업데이트 (NPC 대사 추가)
+    // 채팅 시나리오 (사이버 폭력, 방관, 무시 톤앤무드 반영)
     const chatData = [
-        { name: "윤지후", text: "얘...얘들아 톡이 너무 많이 오는 것 같은..데.." },
-        { name: "이주아", text: "@이은지10423 은지야, 아까 복도에서 서윤이 부르는데 왜 대답 안 해? 서윤이가 민망해하잖아." },
-        { name: "정하늘", text: "누구 수학 프린트 답지 있는 사람? 나 하나만 찍어 보내주라." },
-        { name: "최미래", text: "헐 진짜? 서윤이가 말을 걸어줬는데 무시했다고? 대박..." },
-        { name: "박서윤", text: "아냐 얘들아. 내가 사람 잘못 본 거겠지. 우리 반에 은지라는 애가 있었나 싶기도 하고." },
-        { name: "최미래", text: "서윤이 착한 거 봐ㅠㅠ 은지야 너 초딩 때 애들한테 맞고 지냈다는 거 사실이야? 주아한테 들었는데 진짜 불쌍해서 물어보는 거야." },
-        { name: "도진우", text: "ㅋㅋㅋ 야 쌤 온다 폰 넣어라." },
-        { name: "이주아", text: "아 맞다, 나 오늘 은지네 집 근처 지나갔는데... 그 주공아파트 말이야. 거기 진짜 분위기 묘하더라. 무서워서 얼른 뛰어옴ㅠ" },
-        { name: "한슬기", text: "주공... 거기 재건축도 안 된다며? 아직 그런 데 사는 사람 있구나..." },
-        { name: "송현우", text: "ㅋㅋㅋㅋ 야 기사 못 봄? 주공 단지 애들이랑은 말도 섞지 말라던데. 옮는다고." },
-        { name: "강민호", text: "내일부터 이동수업 때 은지 책상 우리 줄에 붙이지 마라. 자리 좁아지니까." },
-        { name: "최미래", text: "@이은지10423 은지야 근데 너 진짜 안 씻어? 애들이 너 옆에 가면 이상한 냄새 난대... 내가 서윤이한테 부탁해서 향수라도 빌려줄까?" },
-        { name: "박서윤", text: "미래야, 나는 아무나 물건 빌려주는 거 싫어해. 알잖아." },
-        { name: "박건우", text: "조용히 해. 수업 시작한다." },
-        { name: "송현우", text: "@이은지10423 야 은지는 왜 한 마디도 안 해? 투명인간이라 타자도 안 쳐짐?" },
-        { name: "윤지후", text: "데이터 없어서 못 보내는 건 아닐까.." },
-        { name: "박서윤", text: "근데 얘들아, 나 내일 이동수업 때 내 옆자리에 아무도 안 앉았으면 좋겠어. 좀 답답해서." },
-        { name: "최미래", text: "무슨 뜻인지 다들 알지? 서윤이 예민하니까 조심하자 ^^" },
-        { name: "송현우", text: "@이은지10423 들었지? 넌 그냥 내일도 없는 사람인 척해라." },
-        { name: "도진우", text: "ㅇㅈ" }
+        { name: "이주아", text: "@이은지10423 야 은지야, 아까 서윤이가 인사했는데 왜 무시해? 너 진짜 그러는 거 아니야; 서윤이 민망하게." },
+        { name: "최미래", text: "진짜? 와.. 서윤이 성격에 참고 넘어간 게 보살이다. 은지 쟤는 원래 사람 무시하는 게 특기잖아." },
+        { name: "박서윤", text: "아냐 얘들아. 내가 잘 안 보였나 보지. 근데 우리 반에 은지라는 애가 있었나? 기억이 안 나네." },
+        { name: "송현우", text: "ㅋㅋㅋㅋㅋㅋ 야 유령이냐? 투명인간 모드 쩐다. @이은지10423 살아있음 톡 좀?" },
+        { name: "김시우", text: "알림 시끄러운데 그냥 단톡 말고 개인 톡으로 하지? 수행평가 공지 묻히잖아." },
+        { name: "정하늘", text: "ㅇㅈ. 누구 수학 3번 답 아는 사람? 그거만 알려줘." },
+        { name: "이주아", text: "아 맞다, 나 어제 은지네 아파트 쪽 지나갔는데.. 그 재건축 한다던 주공 있잖아. 거기 진짜 으스스하더라ㅠ 무서워서 죽는 줄." },
+        { name: "한슬기", text: "거기... 아직 사람 살아? 다 나간 거 아니었어..?" },
+        { name: "강민호", text: "야 내일 조별 수업 때 책상 붙여야 되는데 은지 책상 우리 조 쪽으로 밀지 마라. 좁아 터지니까." },
+        { name: "최미래", text: "@이은지10423 은지야 근데 너 진짜 좀 씻고 다녀. 주아 말대로 그 동네 냄새 배는 건지 뭔지, 애들이 너 옆에 가기 싫대. 내가 서윤이 봐서 얘기해 주는 거야." },
+        { name: "도진우", text: "야야, 적당히 해라. 선생님들 가끔 불시에 단톡방 검사하는 거 모르냐? 우리 이미지 관리 좀 하자." },
+        { name: "박건우", text: "조용히 해. 불필요한 대화 자제하고 공지 확인한 사람은 이모티콘 달아." },
+        { name: "윤지후", text: "..." },
+        { name: "송현우", text: "@이은지10423 야 씹지 말고 대답 좀 해. 손가락 부러짐?" },
+        { name: "박서윤", text: "됐어 현우야. 원래 수준 안 맞는 사람이랑은 대화가 안 통하는 법이야. 내일 내 옆자리는 비워줘, 답답하니까." },
+        { name: "이은지", text: "...미안해. 알겠어." },
+        { name: "최미래", text: "어? 대답하네? ㅋㅋㅋ 알면 됐어. 눈치 좀 챙기자 ^^" }
     ];
 
     let index = 0;
@@ -421,12 +407,21 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message';
             
-            const charInfo = characterData[data.name] || characterData["기본"];
+            const charInfo = characterData[data.name] || { index: -1 };
             const highlightedText = data.text.replace(/@이은지10423/g, '<span class="mention">@이은지10423</span>');
+
+            // 프로필 이미지 DIV 생성 및 스프라이트 위치 설정
+            let bgStyle = "";
+            if (charInfo.index >= 0) {
+                const posX = charInfo.index * 10; 
+                bgStyle = `background-position: ${posX}% 0;`;
+            } else {
+                bgStyle = `background-image: none; background-color: #CFD8DC;`; // 이은지용
+            }
 
             msgDiv.innerHTML = `
                 <div class="profile-img" 
-                     style="background-color: ${charInfo.color}" 
+                     style="${bgStyle}" 
                      onclick="showProfile('${data.name}')"></div>
                 <div class="message-content">
                     <div class="nickname">${data.name}</div>
@@ -443,7 +438,7 @@
             }
 
             index++;
-            const nextDelay = Math.random() * 1200 + 800; // 대화 속도 약간 조정
+            const nextDelay = Math.random() * 1200 + 800;
             setTimeout(addMessage, nextDelay);
         }
     }
@@ -453,5 +448,6 @@
 
 </body>
 </html>
+
 
 
