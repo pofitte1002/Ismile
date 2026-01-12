@@ -19,7 +19,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_hz_sine_time_domain.png'); /* 노이즈 대용 패턴 */
+            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_hz_sine_time_domain.png');
             opacity: 0.03;
             pointer-events: none;
             z-index: 9999;
@@ -65,6 +65,7 @@
             overflow: hidden;
         }
 
+        /* --- 기존 헤더 및 공지 스타일 --- */
         header {
             padding: 15px; display: flex; align-items: center; justify-content: space-between;
             color: #333; flex-shrink: 0; background-color: var(--kakao-bg);
@@ -72,57 +73,38 @@
         }
         header .title h1 { font-size: 15px; margin: 0; text-align: center; }
         header .title span { font-size: 11px; opacity: 0.7; }
-        /* 공지사항 스타일 (수정됨) */
+        
         .announcement {
             background-color: #FFFFFF;
             padding: 10px 15px;
-            display: flex;
-            align-items: flex-start;
-            font-size: 12px;
-            color: #333;
+            display: flex; align-items: flex-start;
+            font-size: 12px; color: #333;
             border-bottom: 1px solid rgba(0,0,0,0.05);
-            flex-shrink: 0;
-            z-index: 5;
-            margin: 0;
+            flex-shrink: 0; z-index: 5; margin: 0;
         }
-        .announcement-icon { margin-right: 8px; font-size: 14px; flex-shrink: 0; }
-        .announcement-text { line-height: 1.4; flex-grow: 1; }
-        /* 공지사항 드로어 (Drawer) */
+
+        /* --- 드로어 (Drawer) --- */
         #notice-drawer {
-            position: absolute;
-            top: 0; right: -100%;
+            position: absolute; top: 0; right: -100%;
             width: 100%; height: 100%;
             background: var(--drawer-bg);
             transition: right 0.3s ease;
             z-index: 100;
             display: flex; flex-direction: column;
         }
-
         #notice-drawer.active { right: 0; }
-
-        .drawer-header {
-            padding: 15px; border-bottom: 1px solid #eee;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-
-        .drawer-tabs {
-            display: flex; border-bottom: 1px solid #eee;
-            background: #f9f9f9;
-        }
+        .drawer-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+        .drawer-tabs { display: flex; border-bottom: 1px solid #eee; background: #f9f9f9; }
         .tab { flex: 1; text-align: center; padding: 10px; font-size: 12px; color: #888; border-bottom: 2px solid transparent; }
         .tab.active { color: #333; border-bottom: 2px solid #333; font-weight: bold; }
-
         .notice-list { flex-grow: 1; overflow-y: auto; }
-        .notice-item {
-            padding: 15px; border-bottom: 1px solid #f0f0f0;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .notice-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
         .notice-item .content { flex-grow: 1; }
         .notice-item .title { font-size: 14px; color: #333; margin-bottom: 5px; }
         .notice-item .date { font-size: 11px; color: #aaa; }
         .notice-check { color: #ccc; font-size: 18px; }
 
-        /* 기존 채팅 UI */
+        /* --- 채팅 UI --- */
         #chat-log {
             flex-grow: 1; padding: 15px 10px;
             overflow-y: auto; display: flex; flex-direction: column; gap: 15px;
@@ -130,18 +112,151 @@
         }
 
         .message { display: flex; align-items: flex-start; animation: fadeIn 0.4s ease-in-out; }
-        .profile-img { width: 35px; height: 35px; border-radius: 13px; margin-right: 8px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); }
+        .profile-img { 
+            width: 35px; height: 35px; border-radius: 13px; margin-right: 8px; 
+            flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); 
+            cursor: pointer; /* 클릭 가능 표시 */
+            transition: transform 0.1s;
+        }
+        .profile-img:active { transform: scale(0.95); }
+
         .message-content { max-width: 75%; }
         .nickname { font-size: 11px; color: #444; margin-bottom: 3px; }
         .bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; background-color: var(--kakao-white); color: #000; border-top-left-radius: 0; position: relative; }
         .mention { color: #005ba4; font-weight: 500; }
 
         footer { background-color: white; padding: 15px; text-align: center; font-size: 12px; color: #bbb; flex-shrink: 0; }
+
+        /* --- 프로필 모달 (팝업) 스타일 --- */
+        #profile-modal {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end; /* 아래에서 올라오거나 중앙 배치 */
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        #profile-modal.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-card {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 닫기 버튼 */
+        .close-btn {
+            position: absolute;
+            top: 20px; left: 20px;
+            font-size: 24px;
+            color: #555;
+            cursor: pointer;
+            z-index: 202;
+            background: none; border: none;
+        }
+
+        /* 상단 배경 (그리드 패턴) */
+        .profile-bg {
+            flex: 2;
+            background-color: #f4f4f4;
+            /* 그리드 패턴 시뮬레이션 */
+            background-image: 
+                linear-gradient(#ddd 1px, transparent 1px),
+                linear-gradient(90deg, #ddd 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* 십자 마크 데코레이션 */
+        .profile-bg::after {
+            content: "+ + + + + + + + + +";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            color: #ccc;
+            font-family: monospace;
+            font-size: 20px;
+            letter-spacing: 30px;
+            line-height: 40px;
+            pointer-events: none;
+            opacity: 0.3;
+            display: flex; flex-wrap: wrap; justify-content: center; overflow: hidden;
+        }
+
+        /* 프로필 정보 영역 */
+        .profile-info {
+            flex: 1.5;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px; /* 아바타 공간 */
+            position: relative;
+        }
+
+        /* 중앙 아바타 */
+        .modal-avatar {
+            width: 90px; height: 90px;
+            border-radius: 35%; /* 약간 둥근 사각형 느낌 */
+            position: absolute;
+            top: -45px; /* 위로 돌출 */
+            border: 4px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .modal-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .modal-status {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* 하단 액션 버튼들 (데코레이션) */
+        .profile-actions {
+            display: flex;
+            gap: 20px;
+            margin-top: auto;
+            margin-bottom: 40px;
+        }
+        .action-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 5px; cursor: pointer; color: #555;
+        }
+        .action-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #f0f0f0; display: flex; justify-content: center; align-items: center;
+            font-size: 18px;
+        }
+        .action-text { font-size: 11px; }
+
     </style>
 </head>
 <body>
 
 <div class="chat-container" id="main-container">
+    
+    <!-- 공지 드로어 -->
     <div id="notice-drawer">
         <div class="drawer-header">
             <div onclick="toggleDrawer()" style="cursor:pointer;">← 1-4</div>
@@ -162,20 +277,7 @@
                 </div>
                 <div class="notice-check">☑</div>
             </div>
-            <div class="notice-item">
-                <div class="content">
-                    <div class="title">1학기 중간고사 시간표 및 유의사항</div>
-                    <div class="date">2026년 4월 2일 오후 2:15 · 담임선생님</div>
-                </div>
-                <div class="notice-check">☑</div>
-            </div>
-            <div class="notice-item">
-                <div class="content">
-                    <div class="title">급식실 잔반 줄이기 캠페인 안내</div>
-                    <div class="date">2026년 3월 25일 오전 8:30 · 반장 박건우</div>
-                </div>
-                <div class="notice-check">☑</div>
-            </div>
+            <!-- 기타 공지사항 생략 -->
             <div class="notice-item">
                 <div class="content" style="color: #d32f2f;">
                     <div class="title">방과 후 교실 이동 시 정숙 유지할 것 (경고)</div>
@@ -186,6 +288,36 @@
         </div>
     </div>
 
+    <!-- 프로필 모달 -->
+    <div id="profile-modal">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeProfile()">✕</button>
+            <div class="profile-bg">
+                <div class="modal-avatar" id="modal-avatar-img"></div>
+            </div>
+            <div class="profile-info">
+                <div class="modal-name" id="modal-name-text">이름</div>
+                <div class="modal-status" id="modal-status-text">상태메시지</div>
+                
+                <div class="profile-actions">
+                    <div class="action-item">
+                        <div class="action-icon">💬</div>
+                        <span class="action-text">1:1 채팅</span>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-icon">📞</div>
+                        <span class="action-text">통화하기</span>
+                    </div>
+                    <div class="action-item">
+                        <div class="action-icon">📹</div>
+                        <span class="action-text">페이스톡</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 헤더 -->
     <header>
         <div style="font-size: 18px;">〈</div>
         <div class="title"><h1>1학년 4반 <span>24</span></h1></div>
@@ -205,16 +337,83 @@
     const chatLog = document.getElementById('chat-log');
     const container = document.getElementById('main-container');
     const drawer = document.getElementById('notice-drawer');
+    const profileModal = document.getElementById('profile-modal');
     
+    // 모달 관련 요소
+    const modalName = document.getElementById('modal-name-text');
+    const modalStatus = document.getElementById('modal-status-text');
+    const modalAvatar = document.getElementById('modal-avatar-img');
+
     function toggleDrawer() {
         drawer.classList.toggle('active');
     }
 
-    const profileColors = {
-        "박서윤": "#E6B800", "최미래": "#7CB342", "이주아": "#F48FB1",
-        "한슬기": "#424242", "정하늘": "#9E9E9E", "강민호": "#FF8F00",
-        "송현우": "#795548", "박건우": "#212121", "기본": "#DDDDDD"
+    // 캐릭터별 데이터 (색상, 상태메시지)
+    const characterData = {
+        "이주아": { 
+            color: "#F48FB1", 
+            status: "Simplicity is the ultimate sophistication ✨",
+            img: "" // 실제 이미지 URL이 있다면 여기에
+        },
+        "최미래": { 
+            color: "#7CB342", 
+            status: "건들지 마세요. 예민함.",
+            img: ""
+        },
+        "박서윤": { 
+            color: "#E6B800", 
+            status: "Be nice or go away :)",
+            img: ""
+        },
+        "한슬기": { 
+            color: "#424242", 
+            status: "귀찮아...",
+            img: ""
+        },
+        "정하늘": { 
+            color: "#9E9E9E", 
+            status: "오늘 하루도 화이팅!",
+            img: ""
+        },
+        "강민호": { 
+            color: "#FF8F00", 
+            status: "축구하고 싶다",
+            img: ""
+        },
+        "송현우": { 
+            color: "#795548", 
+            status: "No pain No gain 💪",
+            img: ""
+        },
+        "박건우": { 
+            color: "#212121", 
+            status: "1-4 반장 / 공지 필독",
+            img: ""
+        },
+        "이은지": {
+            color: "#DDDDDD",
+            status: "",
+            img: ""
+        },
+        "기본": { color: "#DDDDDD", status: "" }
     };
+
+    // 프로필 열기 함수
+    function showProfile(name) {
+        const data = characterData[name] || characterData["기본"];
+        
+        modalName.innerText = name;
+        modalStatus.innerText = data.status || "상태메시지가 없습니다.";
+        modalAvatar.style.backgroundColor = data.color;
+        
+        // 모달 표시
+        profileModal.classList.add('active');
+    }
+
+    // 프로필 닫기 함수
+    function closeProfile() {
+        profileModal.classList.remove('active');
+    }
 
     const chatData = [
         { name: "이주아", text: "@이은지10423 은지야, 아까 복도에서 서윤이 부르는데 왜 대답 안 해? 서윤이가 민망해하잖아." },
@@ -241,11 +440,16 @@
             const data = chatData[index];
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message';
-            const profileColor = profileColors[data.name] || profileColors["기본"];
+            
+            // 데이터 가져오기
+            const charInfo = characterData[data.name] || characterData["기본"];
             const highlightedText = data.text.replace(/@이은지10423/g, '<span class="mention">@이은지10423</span>');
 
+            // onclick 이벤트에 showProfile 함수 연결
             msgDiv.innerHTML = `
-                <div class="profile-img" style="background-color: ${profileColor}"></div>
+                <div class="profile-img" 
+                     style="background-color: ${charInfo.color}" 
+                     onclick="showProfile('${data.name}')"></div>
                 <div class="message-content">
                     <div class="nickname">${data.name}</div>
                     <div class="bubble">${highlightedText}</div>
@@ -255,7 +459,6 @@
             chatLog.appendChild(msgDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
 
-            // 멘션이 포함된 메시지일 때 화면 진동 효과
             if (data.text.includes("@이은지10423")) {
                 container.classList.add('shake-active');
                 setTimeout(() => container.classList.remove('shake-active'), 500);
@@ -271,5 +474,5 @@
 </script>
 
 </body>
-
 </html>
+
