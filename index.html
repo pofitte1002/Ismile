@@ -6,35 +6,45 @@
     <title>가능중학교 1-4 단톡방</title>
     <style>
         :root {
-            /* Muted Sage & Cool Grey Tone (카카오톡 느낌 제거) */
-            --chat-bg: #CFD8DC;       /* 차분한 블루 그레이 */
-            --header-bg: #ECEFF1;     /* 헤더 */
-            --bubble-bg: #FFFFFF;     /* 말풍선 */
-            --text-primary: #37474F;  /* 메인 텍스트 */
-            --text-secondary: #78909C;/* 보조 텍스트 */
+            /* Muted Sage & Cool Grey Tone */
+            --chat-bg: #CFD8DC;       
+            --header-bg: #ECEFF1;     
+            --bubble-bg: #FFFFFF;     
+            --text-primary: #37474F;  
+            --text-secondary: #78909C;
             --pc-body-bg: #f0f0f0;
             --drawer-bg: #FFFFFF;
             --btn-contact: #546E7A;
             --btn-block: #D32F2F;
         }
 
-        /* 1. 노이즈 필터 (심리적 압박) */
+        /* 1. 심리적 압박 효과: CSS SVG 노이즈 필터 (이미지 파일 X) */
         body::before {
             content: "";
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_hz_sine_time_domain.png');
-            opacity: 0.03;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            /* SVG Data URI를 사용하여 코드 자체적으로 노이즈 생성 */
+            background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+            opacity: 0.08; /* 노이즈 강도 조절 */
             pointer-events: none;
             z-index: 9999;
-            animation: noise 0.2s infinite;
+            /* steps 함수를 사용하여 디지털 지직거림 표현 */
+            animation: noise 0.2s steps(4) infinite; 
         }
 
         @keyframes noise {
-            0% { transform: translate(0,0); }
-            50% { transform: translate(-1%, -1%); }
-            100% { transform: translate(1%, 1%); }
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+            100% { transform: translate(5%, 0); }
         }
 
         /* 2. 화면 진동 효과 */
@@ -122,16 +132,17 @@
 
         .message { display: flex; align-items: flex-start; animation: fadeIn 0.4s ease-in-out; }
         
-        /* 프로필 이미지 (스프라이트 적용) */
+        /* 프로필 이미지 (개별 URL 방식 적용) */
         .profile-img { 
             width: 38px; height: 38px; border-radius: 14px; margin-right: 10px; 
             flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); 
             cursor: pointer; 
             transition: transform 0.1s;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            background-image: url('https://poft.uk/kyryll/profile-NPCcode.png');
-            background-size: 1100% 100%; /* 이미지가 11개 가로로 나열되어 있다고 가정 */
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
+            background-color: #ddd;
         }
         .profile-img:active { transform: scale(0.95); }
 
@@ -200,8 +211,8 @@
             border: 5px solid white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             z-index: 10;
-            background-image: url('https://poft.uk/kyryll/profile-NPCcode.png');
-            background-size: 1100% 100%;
+            background-size: cover;
+            background-position: center;
             background-repeat: no-repeat;
             background-color: #eee;
         }
@@ -220,7 +231,6 @@
             padding: 0 20px; line-height: 1.4;
         }
 
-        /* 수정된 버튼: 연락하기, 차단하기 */
         .profile-actions {
             display: flex; gap: 15px;
             margin-top: auto; margin-bottom: 50px;
@@ -334,40 +344,34 @@
         drawer.classList.toggle('active');
     }
 
-    // NPC 데이터 및 이미지 인덱스 매핑
-    // 이미지 순서(알파벳순): 
-    // 0:geonu, 1:haneul, 2:hyeonu, 3:jifu, 4:jinu, 5:juah, 6:minho, 7:mirae, 8:seoyun, 9:seulgi, 10:siu
+    // NPC 데이터
     const characterData = {
-        "박건우": { index: 0, status: "반장 / 공지 필독. 개인 톡 사절." },
-        "정하늘": { index: 1, status: "..." },
-        "송현우": { index: 2, status: "No pain No gain 💪" },
-        "윤지후": { index: 3, status: "내가 그린 기린 그림" },
-        "도진우": { index: 4, status: "매너 좀 지키자 ^^" },
-        "이주아": { index: 5, status: "Happy Day! ✨" },
-        "강민호": { index: 6, status: "축구하고 싶다" },
-        "최미래": { index: 7, status: "건들지 마세요. 예민함." },
-        "박서윤": { index: 8, status: "Be nice or go away." },
-        "한슬기": { index: 9, status: ".." },
-        "김시우": { index: 10, status: "효율적으로 살자." },
-        "이은지": { index: -1, status: "" }, // 은지는 이미지 없음 (기본 처리)
+        "박건우": { code: "geonu", status: "반장 / 공지 필독. 개인 톡 사절." },
+        "정하늘": { code: "haneul", status: "..." },
+        "송현우": { code: "hyeonu", status: "No pain No gain 💪" },
+        "윤지후": { code: "jifu", status: "내가 그린 기린 그림" },
+        "도진우": { code: "jinu", status: "매너 좀 지키자 ^^" },
+        "이주아": { code: "juah", status: "Happy Day! ✨" },
+        "강민호": { code: "minho", status: "축구하고 싶다" },
+        "최미래": { code: "mirae", status: "건들지 마세요. 예민함." },
+        "박서윤": { code: "seoyun", status: "Be nice or go away." },
+        "한슬기": { code: "seulgi", status: ".." },
+        "김시우": { code: "siu", status: "효율적으로 살자." },
+        "이은지": { code: "default", status: "" } 
     };
 
     // 프로필 열기 함수
     function showProfile(name) {
-        const data = characterData[name] || { index: -1, status: "" };
+        const data = characterData[name] || { code: "default", status: "" };
         
         modalName.innerText = name;
         modalStatus.innerText = data.status || "상태메시지가 없습니다.";
         
-        // 이미지 위치 조정 (스프라이트)
-        // 11개 이미지이므로 간격은 0%, 10%, 20% ... 100%
-        if(data.index >= 0) {
-            const positionX = data.index * 10; // 0, 10, 20...
-            modalAvatar.style.backgroundPosition = `${positionX}% 0`;
-            modalAvatar.style.backgroundColor = 'transparent';
+        if(data.code !== "default") {
+            const imgUrl = `https://poft.uk/kyryll/profile-${data.code}.png`;
+            modalAvatar.style.backgroundImage = `url('${imgUrl}')`;
         } else {
-            // 이은지 혹은 데이터 없을 경우 회색 처리
-            modalAvatar.style.backgroundPosition = 'center';
+            modalAvatar.style.backgroundImage = 'none';
             modalAvatar.style.backgroundColor = '#CFD8DC';
         }
 
@@ -378,12 +382,12 @@
         profileModal.classList.remove('active');
     }
 
-    // 채팅 시나리오 (사이버 폭력, 방관, 무시 톤앤무드 반영)
+    // 채팅 시나리오
     const chatData = [
         { name: "이주아", text: "@이은지10423 야 은지야, 아까 서윤이가 인사했는데 왜 무시해? 너 진짜 그러는 거 아니야; 서윤이 민망하게." },
         { name: "최미래", text: "진짜? 와.. 서윤이 성격에 참고 넘어간 게 보살이다. 은지 쟤는 원래 사람 무시하는 게 특기잖아." },
         { name: "박서윤", text: "아냐 얘들아. 내가 잘 안 보였나 보지. 근데 우리 반에 은지라는 애가 있었나? 기억이 안 나네." },
-        { name: "송현우", text: "ㅋㅋㅋㅋㅋㅋ 야 유령이냐? 투명인간 모드 쩐다. @이은지10423 살아있음 톡 좀?" },
+        { name: "송현우", text: "ㅋㅋㅋㅋㅋㅋ 야 유령이냐? 투명인간 모드 쩐다. @이은지10423 읽씹하지 말고 말 좀?" },
         { name: "김시우", text: "알림 시끄러운데 그냥 단톡 말고 개인 톡으로 하지? 수행평가 공지 묻히잖아." },
         { name: "정하늘", text: "ㅇㅈ. 누구 수학 3번 답 아는 사람? 그거만 알려줘." },
         { name: "이주아", text: "아 맞다, 나 어제 은지네 아파트 쪽 지나갔는데.. 그 재건축 한다던 주공 있잖아. 거기 진짜 으스스하더라ㅠ 무서워서 죽는 줄." },
@@ -393,10 +397,9 @@
         { name: "도진우", text: "야야, 적당히 해라. 선생님들 가끔 불시에 단톡방 검사하는 거 모르냐? 우리 이미지 관리 좀 하자." },
         { name: "박건우", text: "조용히 해. 불필요한 대화 자제하고 공지 확인한 사람은 이모티콘 달아." },
         { name: "윤지후", text: "..." },
-        { name: "송현우", text: "@이은지10423 야 씹지 말고 대답 좀 해. 손가락 부러짐?" },
+        { name: "송현우", text: "@이은지10423 야 끝까지 무시? ㅋㅋㅋㅋ 진짜 없는 사람 취급해 달라 이건가?" },
         { name: "박서윤", text: "됐어 현우야. 원래 수준 안 맞는 사람이랑은 대화가 안 통하는 법이야. 내일 내 옆자리는 비워줘, 답답하니까." },
-        { name: "이은지", text: "...미안해. 알겠어." },
-        { name: "최미래", text: "어? 대답하네? ㅋㅋㅋ 알면 됐어. 눈치 좀 챙기자 ^^" }
+        { name: "최미래", text: "무슨 뜻인지 다들 알지? 서윤이 예민하니까 조심하자 ^^" },
     ];
 
     let index = 0;
@@ -407,16 +410,15 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = 'message';
             
-            const charInfo = characterData[data.name] || { index: -1 };
+            const charInfo = characterData[data.name] || { code: "default" };
             const highlightedText = data.text.replace(/@이은지10423/g, '<span class="mention">@이은지10423</span>');
 
-            // 프로필 이미지 DIV 생성 및 스프라이트 위치 설정
             let bgStyle = "";
-            if (charInfo.index >= 0) {
-                const posX = charInfo.index * 10; 
-                bgStyle = `background-position: ${posX}% 0;`;
+            if (charInfo.code !== "default") {
+                const imgUrl = `https://poft.uk/kyryll/profile-${charInfo.code}.png`;
+                bgStyle = `background-image: url('${imgUrl}');`;
             } else {
-                bgStyle = `background-image: none; background-color: #CFD8DC;`; // 이은지용
+                bgStyle = `background-image: none; background-color: #CFD8DC;`;
             }
 
             msgDiv.innerHTML = `
@@ -448,6 +450,3 @@
 
 </body>
 </html>
-
-
-
