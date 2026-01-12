@@ -18,27 +18,42 @@
             --btn-block: #D32F2F;
         }
 
-        /* 1. 노이즈 필터 (HTML 내장 SVG 방식) */
-        body::before {
-            content: "";
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: var(--pc-body-bg);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden;
+        }
+
+        /* 1. HTML 내장 SVG 노이즈 레이어 */
+        #noise-layer {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            /* 외부 이미지 대신 SVG Data URI를 사용하여 자체 생성 */
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
-            opacity: 0.05; /* 투명도 조절 */
             pointer-events: none;
             z-index: 9999;
-            animation: noise 0.2s infinite;
+            opacity: 0.05; /* 평소에는 아주 희미하게 */
+            transition: opacity 0.1s ease;
+            /* SVG Data URI로 노이즈 패턴 자체 생성 */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
         }
 
-        @keyframes noise {
+        /* 멘션 당했을 때 노이즈가 강해지는 클래스 */
+        #noise-layer.glitch-active {
+            opacity: 0.3; /* 노이즈 강도 증가 */
+            animation: noise-shake 0.2s infinite;
+        }
+
+        @keyframes noise-shake {
             0% { transform: translate(0,0); }
-            50% { transform: translate(-1%, -1%); }
-            100% { transform: translate(1%, 1%); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, -5px); }
+            100% { transform: translate(0,0); }
         }
 
-        /* 2. 화면 진동 효과 */
+        /* 2. 화면 진동 효과 (컨테이너용) */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -53,14 +68,6 @@
             animation: shake 0.5s infinite;
         }
 
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-            background-color: var(--pc-body-bg);
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; overflow: hidden;
-        }
-
         .chat-container {
             width: 100%; max-width: 380px;
             height: 90vh; 
@@ -70,6 +77,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             position: relative;
             overflow: hidden;
+            z-index: 1; /* 노이즈 아래 */
         }
 
         /* --- 헤더 --- */
@@ -248,6 +256,9 @@
 </head>
 <body>
 
+<!-- 노이즈 효과 레이어 (HTML 내장) -->
+<div id="noise-layer"></div>
+
 <div class="chat-container" id="main-container">
     
     <!-- 공지 드로어 -->
@@ -325,6 +336,7 @@
     const container = document.getElementById('main-container');
     const drawer = document.getElementById('notice-drawer');
     const profileModal = document.getElementById('profile-modal');
+    const noiseLayer = document.getElementById('noise-layer');
     
     // 모달 관련 요소
     const modalName = document.getElementById('modal-name-text');
@@ -381,7 +393,6 @@
             img: "https://poft.uk/kyryll/profile-siu.png", 
             status: "효율적으로 살자." 
         },
-        // 이은지는 뷰어(유저)
         "이은지": { 
             img: "", 
             status: "" 
@@ -411,7 +422,7 @@
         profileModal.classList.remove('active');
     }
 
-    // 채팅 시나리오 (이은지 대사 없음, NPC들이 은지 무시/괴롭힘)
+    // 채팅 시나리오
     const chatData = [
         { name: "이주아", text: "@이은지10423 야 은지야, 아까 서윤이가 인사했는데 왜 무시해? 너 진짜 그러는 거 아니야; 서윤이 민망하게." },
         { name: "최미래", text: "진짜? 와.. 서윤이 성격에 참고 넘어간 게 보살이다. 은지 쟤는 원래 사람 무시하는 게 특기잖아." },
@@ -463,10 +474,16 @@
             chatLog.appendChild(msgDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
 
-            // 멘션(이은지) 당할 때 화면 흔들림 효과
+            // 멘션(@이은지10423) 당할 때 노이즈 + 화면 흔들림 효과 발동
             if (data.text.includes("@이은지10423")) {
                 container.classList.add('shake-active');
-                setTimeout(() => container.classList.remove('shake-active'), 500);
+                noiseLayer.classList.add('glitch-active');
+                
+                // 0.5초 뒤 효과 제거
+                setTimeout(() => {
+                    container.classList.remove('shake-active');
+                    noiseLayer.classList.remove('glitch-active');
+                }, 500);
             }
 
             index++;
