@@ -27,30 +27,24 @@
         }
 
        /* 입자가 굵고 진한 노이즈 CSS */
-#noise-layer {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 9999;
-    
-    /* 평소 투명도: 0.1 (약간 보임) */
-    opacity: 0.1; 
-    transition: opacity 0.1s ease;
-    
-    /* 블렌드 모드 추가: 배경과 섞여서 더 거칠게 표현됨 */
-    mix-blend-mode: hard-light; 
-
-    /* baseFrequency를 0.65로 낮춰서 입자를 키움 */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        #noise-layer {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.1; 
+            transition: opacity 0.1s ease;
+            mix-blend-mode: hard-light; 
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
         }
 
-    /* 멘션 시 더 강력하게 */
-#noise-layer.glitch-active {
-    opacity: 0.6; /* 강도 대폭 증가 */
-    animation: noise-shake 0.1s infinite; /* 진동 속도 더 빠르게 */
+        /* 멘션 시 더 강력하게 */
+        #noise-layer.glitch-active {
+            opacity: 0.6;
+            animation: noise-shake 0.1s infinite;
         }
-        /* 2. 화면 진동 효과 (컨테이너용) */
+
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -74,7 +68,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             position: relative;
             overflow: hidden;
-            z-index: 1; /* 노이즈 아래 */
+            z-index: 1; 
         }
 
         /* --- 헤더 --- */
@@ -128,7 +122,7 @@
 
         .message { display: flex; align-items: flex-start; animation: fadeIn 0.4s ease-in-out; }
         
-        /* 프로필 이미지 */
+        /* 채팅방 내 프로필 이미지 (작은 썸네일) */
         .profile-img { 
             width: 38px; height: 38px; border-radius: 14px; margin-right: 10px; 
             flex-shrink: 0; border: 1px solid rgba(0,0,0,0.05); 
@@ -163,7 +157,7 @@
             flex-shrink: 0; border-top: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* --- 프로필 모달 --- */
+        /* --- 프로필 모달 (수정됨) --- */
         #profile-modal {
             position: absolute; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -184,47 +178,46 @@
 
         .close-btn {
             position: absolute; top: 20px; left: 20px;
-            font-size: 24px; color: #444; cursor: pointer;
+            font-size: 28px; color: #fff; /* 배경 이미지가 어두울 수 있으므로 흰색 혹은 그림자 처리 */
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            cursor: pointer;
             z-index: 202; background: none; border: none; padding: 5px;
         }
 
+        /* 상단 배경 영역: 이제 이미지가 꽉 차게 들어감 */
         .profile-bg {
-            flex: 2;
+            flex: 1.5; /* 상단 이미지 영역 비율 */
             background-color: #FAFAFA;
-            background-image: 
-                linear-gradient(#E0E0E0 1px, transparent 1px),
-                linear-gradient(90deg, #E0E0E0 1px, transparent 1px);
-            background-size: 30px 30px;
-            position: relative;
-        }
-
-        .modal-avatar {
-            width: 90px; height: 90px;
-            border-radius: 38%;
-            position: absolute;
-            bottom: -45px; left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 10;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #eee;
+            position: relative;
         }
-
+        
+        /* 정보 영역: 아바타 원형 제거로 인한 스타일 변경 */
         .profile-info {
-            flex: 1.8;
+            flex: 1; /* 하단 정보 영역 비율 */
             background: white;
             display: flex; flex-direction: column; align-items: center;
-            padding-top: 55px;
+            padding-top: 30px; /* 상단 여백 줄임 */
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            margin-top: -20px; /* 사진과 자연스럽게 겹치도록 */
+            z-index: 10;
         }
 
-        .modal-name { font-size: 18px; font-weight: 700; color: #263238; margin-bottom: 8px; }
+        .modal-name { 
+            font-size: 24px; /* 폰트 키움 */
+            font-weight: 800; 
+            color: #263238; 
+            margin-bottom: 10px; 
+        }
         .modal-status {
-            font-size: 13px; color: #78909C;
-            margin-bottom: 30px; text-align: center;
-            padding: 0 20px; line-height: 1.4;
+            font-size: 15px; /* 폰트 키움 */
+            color: #78909C;
+            margin-bottom: 30px; 
+            text-align: center;
+            padding: 0 20px; line-height: 1.5;
         }
 
         .profile-actions {
@@ -233,9 +226,9 @@
             width: 80%; justify-content: center;
         }
         .action-btn {
-            flex: 1; padding: 12px 0;
-            border-radius: 8px; border: none;
-            font-size: 13px; font-weight: 600; cursor: pointer;
+            flex: 1; padding: 14px 0;
+            border-radius: 12px; border: none;
+            font-size: 14px; font-weight: 600; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 6px;
             transition: opacity 0.2s;
         }
@@ -253,7 +246,7 @@
 </head>
 <body>
 
-<!-- 노이즈 효과 레이어 (HTML 내장) -->
+<!-- 노이즈 효과 레이어 -->
 <div id="noise-layer"></div>
 
 <div class="chat-container" id="main-container">
@@ -289,13 +282,12 @@
         </div>
     </div>
 
-    <!-- 프로필 모달 -->
+    <!-- 프로필 모달 (수정됨) -->
     <div id="profile-modal">
         <div class="modal-card">
             <button class="close-btn" onclick="closeProfile()">✕</button>
-            <div class="profile-bg">
-                <div class="modal-avatar" id="modal-avatar-img"></div>
-            </div>
+            <!-- 배경 영역이 곧 프로필 이미지가 됨 -->
+            <div class="profile-bg" id="modal-profile-bg"></div>
             <div class="profile-info">
                 <div class="modal-name" id="modal-name-text">이름</div>
                 <div class="modal-status" id="modal-status-text">상태메시지</div>
@@ -338,56 +330,56 @@
     // 모달 관련 요소
     const modalName = document.getElementById('modal-name-text');
     const modalStatus = document.getElementById('modal-status-text');
-    const modalAvatar = document.getElementById('modal-avatar-img');
+    const modalBg = document.getElementById('modal-profile-bg'); // 타겟 변경
 
     function toggleDrawer() {
         drawer.classList.toggle('active');
     }
 
-    // NPC 데이터 (URL 직접 연결)
+    // NPC 데이터 (png URL 적용)
     const characterData = {
         "박건우": { 
-            img: "https://poft.uk/kyryll/geonu.webp", 
+            img: "https://poft.uk/kyryll/profile-geonu.webp", 
             status: "반장 / 공지 필독. 개인 톡 사절." 
         },
         "정하늘": { 
-            img: "https://poft.uk/kyryll/haneul.webp", 
+            img: "https://poft.uk/kyryll/profile-haneul.webp", 
             status: "..." 
         },
         "송현우": { 
-            img: "https://poft.uk/kyryll/hyeonu.webp", 
+            img: "https://poft.uk/kyryll/profile-hyeonu.webp", 
             status: "No pain No gain 💪" 
         },
         "윤지후": { 
-            img: "https://poft.uk/kyryll/jifu.webp", 
+            img: "https://poft.uk/kyryll/profile-jifu.webp", 
             status: "내가 그린 기린 그림" 
         },
         "도진우": { 
-            img: "https://poft.uk/kyryll/jinu.webp", 
+            img: "https://poft.uk/kyryll/profile-jinu.webp", 
             status: "매너 좀 지키자 ^^" 
         },
         "이주아": { 
-            img: "https://poft.uk/kyryll/juah.webp", 
+            img: "https://poft.uk/kyryll/profile-juah.webp", 
             status: "Happy Day! ✨" 
         },
         "강민호": { 
-            img: "https://poft.uk/kyryll/minho.webp", 
+            img: "https://poft.uk/kyryll/profile-minho.webp", 
             status: "축구하고 싶다" 
         },
         "최미래": { 
-            img: "https://poft.uk/kyryll/mirae.webp", 
+            img: "https://poft.uk/kyryll/profile-mirae.webp", 
             status: "건들지 마세요. 예민함." 
         },
         "박서윤": { 
-            img: "https://poft.uk/kyryll/seoyun.webp", 
+            img: "https://poft.uk/kyryll/profile-seoyun.webp", 
             status: "Be nice or go away." 
         },
         "한슬기": { 
-            img: "https://poft.uk/kyryll/seulgi.webp", 
+            img: "https://poft.uk/kyryll/profile-seulgi.webp", 
             status: ".." 
         },
         "김시우": { 
-            img: "https://poft.uk/kyryll/siu.webp", 
+            img: "https://poft.uk/kyryll/profile-siu.webp", 
             status: "효율적으로 살자." 
         },
         "이은지": { 
@@ -403,13 +395,12 @@
         modalName.innerText = name;
         modalStatus.innerText = data.status || "상태메시지가 없습니다.";
         
-        // URL 적용
+        // 상단 배경(profile-bg)에 이미지 적용
         if(data.img) {
-            modalAvatar.style.backgroundImage = `url('${data.img}')`;
-            modalAvatar.style.backgroundColor = 'transparent';
+            modalBg.style.backgroundImage = `url('${data.img}')`;
         } else {
-            modalAvatar.style.backgroundImage = 'none';
-            modalAvatar.style.backgroundColor = '#CFD8DC';
+            modalBg.style.backgroundImage = 'none';
+            modalBg.style.backgroundColor = '#CFD8DC';
         }
 
         profileModal.classList.add('active');
@@ -450,7 +441,6 @@
             const charInfo = characterData[data.name] || { img: "" };
             const highlightedText = data.text.replace(/@이은지10423/g, '<span class="mention">@이은지10423</span>');
 
-            // 프로필 이미지 URL 적용
             let bgStyle = "";
             if (charInfo.img) {
                 bgStyle = `background-image: url('${charInfo.img}');`;
@@ -471,12 +461,10 @@
             chatLog.appendChild(msgDiv);
             chatLog.scrollTop = chatLog.scrollHeight;
 
-            // 멘션(@이은지10423) 당할 때 노이즈 + 화면 흔들림 효과 발동
             if (data.text.includes("@이은지10423")) {
                 container.classList.add('shake-active');
                 noiseLayer.classList.add('glitch-active');
                 
-                // 0.5초 뒤 효과 제거
                 setTimeout(() => {
                     container.classList.remove('shake-active');
                     noiseLayer.classList.remove('glitch-active');
